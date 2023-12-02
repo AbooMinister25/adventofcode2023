@@ -30,8 +30,6 @@ parser.add_argument("day", type=int)
 
 
 def generate(day: int) -> None:
-    print("Generating Files")
-
     path = pathlib.Path(f"day{day}")
     path.mkdir(parents=True, exist_ok=True)
 
@@ -42,9 +40,6 @@ def generate(day: int) -> None:
     python_path.mkdir(parents=True, exist_ok=True)
 
     subprocess.run(["cargo", "init"], cwd=rust_path)
-    subprocess.run(["pdm", "init"], cwd=python_path)
-
-    subprocess.run(["pdm", "add", "black"])
 
     python_src_path = python_path / "src"
     python_src_path.mkdir(parents=True, exist_ok=True)
@@ -52,6 +47,8 @@ def generate(day: int) -> None:
 
     with open(python_file_path, "w+") as f:
         f.write(PYTHON_FILE_TEMPLATE.format(day=day))
+
+    print("Generated structure.")
 
 
 if __name__ == "__main__":
