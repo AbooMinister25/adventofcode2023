@@ -19,7 +19,7 @@ def part_2() -> None:
 
 
 if __name__ == "__main__":
-    raw_input = fetch(2022, 3)
+    raw_input = fetch(2023, {day})
 """
 
 
@@ -33,8 +33,8 @@ def generate(day: int) -> None:
     path = pathlib.Path(f"day{day}")
     path.mkdir(parents=True, exist_ok=True)
 
-    rust_path = path / f"day{day}_rust"
-    python_path = path / f"day{day}_python"
+    rust_path = path / f"rust"
+    python_path = path / f"python"
 
     rust_path.mkdir(parents=True, exist_ok=True)
     python_path.mkdir(parents=True, exist_ok=True)
