@@ -18,12 +18,9 @@ class GridType(enum.Enum):
 
 @dataclass
 class GridItem:
-    typ: GridType
     value: str
     row: int
-    start_col: int
-    end_col: int
-    gears: int = 0
+    span: tuple[int, int]
     touching: list[int] = field(default_factory=list)
 
 
@@ -50,12 +47,12 @@ def parse(inp: str) -> tuple[list[GridItem], list[list[str]]]:
                             break
                         current = line[col]
 
-                    ret.append(GridItem(GridType.NUMBER, acc, row, start, col))
+                    ret.append(GridItem(acc, row, (start, col)))
                 case c if c in symbols:
-                    ret.append(GridItem(GridType.SYMBOL, c, row, col, col + 1))
+                    ret.append(GridItem(c, row, (col, col + 1)))
                     col += 1
                 case c:
-                    ret.append(GridItem(GridType.PERIOD, c, row, col, col + 1))
+                    ret.append(GridItem(c, row, (col, col + 1)))
                     col += 1
 
         row += 1
@@ -72,7 +69,7 @@ def find_neighbors(grid: list[list[str]], row: int, column: int) -> list[GridIte
         n_col = column + c
         if n_row >= 0 and n_col >= 0 and n_row < len(grid) and n_col < len(grid[0]):
             neighbor = grid[n_row][n_col]
-            n = GridItem(GridType.SYMBOL, neighbor, n_row, n_col, n_col + 1, 0)
+            n = GridItem(neighbor, n_row, (n_col, n_col + 1))
             neighbors.append(n)
 
     return neighbors
@@ -81,7 +78,7 @@ def find_neighbors(grid: list[list[str]], row: int, column: int) -> list[GridIte
 def touching_symbol(grid: list[list[str]], item: GridItem) -> tuple[bool, GridItem | None]:
     symbols = {"$", "%", "=", "*", "&", "+", "/", "@", "#", "-"}
 
-    for i in range(item.start_col, item.end_col):
+    for i in range(*item.span):
         neighbors = find_neighbors(grid, item.row, i)
         touching = [n for n in neighbors if n.value in symbols]
         if touching:
@@ -94,9 +91,11 @@ def part_1(inp: str) -> int:
     items, grid = parse(inp)
     numbers: list[int] = []
 
-    for item in items:
-        if item.typ == GridType.NUMBER and touching_symbol(grid, item)[0]:
-            numbers.append(int(item.value))
+    numbers = [
+        int(item.value)
+        for item in items
+        if item.value.isdecimal() and touching_symbol(grid, item)[0]
+    ]
 
     return sum(numbers)
 
@@ -105,16 +104,15 @@ def part_2(inp: str) -> int:
     items, grid = parse(inp)
 
     for item in items:
-        if item.typ == GridType.NUMBER:
+        if item.value.isdecimal():
             touching = touching_symbol(grid, item)
 
             if touching[0] and touching[1].value == "*":  # type: ignore
                 sym = typing.cast(GridItem, touching[1])
-                num = next(i for i in items if i.row == sym.row and i.start_col == sym.start_col)
-                num.gears += 1
+                num = next(i for i in items if i.row == sym.row and i.span[0] == sym.span[0])
                 num.touching.append(int(item.value))
 
-    gears = [i.touching for i in items if i.gears == 2]
+    gears = [i.touching for i in items if len(i.touching) == 2]
     return sum(math.prod(i) for i in gears)
 
 
