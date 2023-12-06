@@ -6,7 +6,7 @@ groups = ["default", "format", "repl", "test", "lint", "coverage"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:0fcd03030aad91c913d779d24e4f61a03e56a4fdd9c9a4f49568f7a970fc7ec1"
+content_hash = "sha256:15a6623af0fda496ac92f454b397adb72ac2c4f9d25c6880e54633003198e3cc"
 
 [[package]]
 name = "aoc-lube"

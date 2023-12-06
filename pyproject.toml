@@ -8,6 +8,7 @@ authors = [
 dependencies = [
     "aoc-lube[utils]>=1.0.0",
     "more-itertools>=10.1.0",
+    "networkx>=3.2.1",
 ]
 requires-python = ">=3.10"
 license = {text = "MIT"}
